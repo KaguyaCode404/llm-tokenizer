@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resonance Tokenizer // Context-Entangled LLM Token & Character Lens</title>
+</head>
+<body style="font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; max-width: 960px; margin: 20px auto; padding: 0 16px; color: #111;">
+
+  <!-- Header -->
+  <header>
+    <h1 style="margin-bottom: 4px;">⚡ Resonance Tokenizer</h1>
+    <p style="margin-top: 0; color: #555;">
+      <strong>The Context-Entangled Tokenizer:</strong> Standard tokenizers use frozen static rules. This tokenizer treats your input as a live <em>echo</em> of your reference context — fusing familiar phrases into super-tokens and exposing character-by-character provenance.
+    </p>
+  </header>
+
+  <hr>
+
+  <!-- Step 1: Reference Context -->
+  <section>
+    <h2>1. Reference Input (Context Memory)</h2>
+    <p style="font-size: 0.9em; color: #444;">
+      Enter the source knowledge, conversation history, or document that the tokenizer will use as its memory foundation:
+    </p>
+    <textarea id="refInput" rows="6" style="width: 100%; font-family: monospace; font-size: 14px; padding: 8px; box-sizing: border-box;">Large language models process text by decomposing sentences into tokens. 
+Tokenization determines how efficiently memory is utilized.
+When text mirrors the reference context, subwords can fuse into dense resonance units.</textarea>
+  </section>
+
+  <br>
+
+  <!-- Step 2: Target Evaluation Input -->
+  <section>
+    <h2>2. Next Input (Target to Tokenize & Inspect)</h2>
+    <p style="font-size: 0.9em; color: #444;">
+      Enter any subsequent phrase. The tokenizer will cross-reference it against the input above, decompose it into resonant and dissonant tokens, and map every character:
+    </p>
+    <textarea id="targetInput" rows="3" style="width: 100%; font-family: monospace; font-size: 14px; padding: 8px; box-sizing: border-box;">Large language models fuse into dense resonance units, but alien words split!</textarea>
+    
+    <div style="margin-top: 10px;">
+      <button id="btnTokenize" style="padding: 8px 18px; font-weight: bold; font-size: 14px; cursor: pointer;">
+        ⚡ Tokenize &amp; Analyze Characters
+      </button>
+      <span style="margin-left: 12px; font-size: 0.9em; color: #666;">
+        (Or just type in the boxes above — analysis updates automatically)
+      </span>
+    </div>
+  </section>
+
+  <br>
+  <hr>
+
+  <!-- Step 3: Resonance Diagnostics & Metrics -->
+  <section>
+    <h2>3. Token &amp; Character Telemetry</h2>
+
+    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; text-align: center;">
+      <tr style="background: #f4f4f4;">
+        <th>Total Characters</th>
+        <th>Total Tokens</th>
+        <th>Compression (Chars/Token)</th>
+        <th>UTF-8 Bytes</th>
+        <th>Context Resonance</th>
+      </tr>
+      <tr>
+        <td><strong id="metricChars" style="font-size: 1.3em;">0</strong></td>
+        <td><strong id="metricTokens" style="font-size: 1.3em;">0</strong></td>
+        <td><strong id="metricRatio" style="font-size: 1.3em;">0.00</strong></td>
+        <td><strong id="metricBytes" style="font-size: 1.3em;">0 B</strong></td>
+        <td>
+          <meter id="resonanceMeter" min="0" max="100" value="0" style="width: 120px; height: 18px;"></meter>
+          <span id="metricResonance">0%</span>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+  <br>
+
+  <!-- Step 4: Token Visualization -->
+  <section>
+    <h2>4. Visual Token Stream (Colored Chips)</h2>
+    <p style="font-size: 0.9em; color: #444;">
+      Green chips indicate <strong>Resonant Tokens</strong> (learned directly from reference). Yellow/Orange chips indicate <strong>Dissonant / Novel Tokens</strong>.
+    </p>
+    <div id="tokenChipsContainer" style="padding: 16px; border: 1px dashed #999; background: #fafafa; min-height: 60px; line-height: 2.4;">
+      <em>Tokens will render here...</em>
+    </div>
+  </section>
+
+  <br>
+
+  <!-- Step 5: Character-by-Character Inspection & Provenance Table -->
+  <section>
+    <h2>5. Character &amp; Token Forensic Breakdown</h2>
+    <p style="font-size: 0.9em; color: #444;">
+      Every character from the target input is indexed below, paired with its parent token, Unicode codepoints, byte representation, and exact resonance location in the reference text:
+    </p>
+
+    <details open>
+      <summary style="font-weight: bold; cursor: pointer; padding: 6px 0;">
+        ▼ Token Details &amp; Reference Provenance Table
+      </summary>
+      <div style="overflow-x: auto; margin-top: 8px;">
+        <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <thead>
+            <tr style="background: #f0f0f0;">
+              <th>#</th>
+              <th>Token ID</th>
+              <th>Token String</th>
+              <th>Chars</th>
+              <th>Char Range [Start : End]</th>
+              <th>UTF-8 Bytes</th>
+              <th>Resonance Type</th>
+              <th>Reference Provenance</th>
+            </tr>
+          </thead>
+          <tbody id="tokenTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <br>
+
+    <details open>
+      <summary style="font-weight: bold; cursor: pointer; padding: 6px 0;">
+        ▼ Character-by-Character Forensic Grid
+      </summary>
+      <div style="overflow-x: auto; margin-top: 8px;">
+        <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 12px; font-family: monospace;">
+          <thead>
+            <tr style="background: #f0f0f0;">
+              <th>Char Index</th>
+              <th>Glyph</th>
+              <th>Unicode Codepoint</th>
+              <th>UTF-8 Hex Byte</th>
+              <th>Assigned Token ID</th>
+              <th>Resonance Source</th>
+            </tr>
+          </thead>
+          <tbody id="charTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <br>
+
+  <!-- Step 6: Raw Token IDs Array Output -->
+  <section>
+    <h2>6. Export Token IDs</h2>
+    <textarea id="rawIdsOutput" rows="3" readonly style="width: 100%; font-family: monospace; font-size: 13px; padding: 8px; box-sizing: border-box;">[]</textarea>
+  </section>
+
+  <footer style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 0.85em; color: #666;">
+    Resonance Tokenizer &bull; Standalone HTML Architecture &bull; Local Browser Execution
+  </footer>
+
+  <!-- ========================================================
+       STANDALONE INLINE LOGIC (Zero external files needed)
+       ======================================================== -->
+  <script>
+    // Distinct readable pastel colors for adjacent tokens
+    const CHIP_COLORS = [
+      '#e0f2fe', '#fef3c7', '#dcfce7', '#f3e8ff', 
+      '#fee2e2', '#e0e7ff', '#ffedd5', '#ccfbf1'
+    ];
+
+    function runTokenizer() {
+      const refText = document.getElementById('refInput').value;
+      const targetText = document.getElementById('targetInput').value;
+
+      // 1. Build Reference Knowledge (words, phrases, and character positions)
+      const refWords = refText.toLowerCase().match(/\b[a-z0-9_-]+\b/g) || [];
+      const refPhrases = new Map();
+
+      // Collect 1-word, 2-word, and 3-word n-grams from reference
+      for (let n = 3; n >= 1; n--) {
+        for (let i = 0; i <= refWords.length - n; i++) {
+          const phrase = refWords.slice(i, i + n).join(' ');
+          if (phrase.length >= 3 && !refPhrases.has(phrase)) {
+            // Find character index in original reference text
+            const charIdx = refText.toLowerCase().indexOf(phrase);
+            refPhrases.set(phrase, {
+              phrase: phrase,
+              wordCount: n,
+              charStart: charIdx,
+              charEnd: charIdx + phrase.length
+            });
+          }
+        }
+      }
+
+      // 2. Tokenize Target Input using Reference Resonance
+      const targetTokens = [];
+      const regex = /\b[a-z0-9_-]+\b|[^\s\w]|\s+/gi;
+      const rawChunks = targetText.match(regex) || [];
+
+      let currentGlobalOffset = 0;
+      let nextId = 1000;
+      let resonantTokenCount = 0;
+
+      let idx = 0;
+      while (idx < rawChunks.length) {
+        const chunk = rawChunks[idx];
+        const chunkStart = targetText.indexOf(chunk, currentGlobalOffset);
+        const start = chunkStart !== -1 ? chunkStart : currentGlobalOffset;
+
+        // Try matching longest multi-word resonant phrase
+        let matchedPhrase = null;
+        let wordsInMatch = 1;
+
+        if (chunk.match(/\b[a-z0-9_-]+\b/i)) {
+          // Look ahead 3, 2 words
+          for (let len = 3; len >= 2; len--) {
+            const candidateWords = [];
+            let cIdx = idx;
+            while (cIdx < rawChunks.length && candidateWords.length < len) {
+              if (rawChunks[cIdx].match(/\b[a-z0-9_-]+\b/i)) {
+                candidateWords.push(rawChunks[cIdx]);
+              }
+              cIdx++;
+            }
+            if (candidateWords.length === len) {
+              const testKey = candidateWords.join(' ').toLowerCase();
+              if (refPhrases.has(testKey)) {
+                matchedPhrase = testKey;
+                wordsInMatch = cIdx - idx;
+                break;
+              }
+            }
+          }
+        }
+
+        let tokenText = "";
+        let isResonant = false;
+        let resonanceInfo = null;
+
+        if (matchedPhrase) {
+          tokenText = rawChunks.slice(idx, idx + wordsInMatch).join('');
+          isResonant = true;
+          resonanceInfo = refPhrases.get(matchedPhrase);
+          idx += wordsInMatch;
+        } else {
+          tokenText = chunk;
+          const clean = chunk.trim().toLowerCase();
+          if (refPhrases.has(clean)) {
+            isResonant = true;
+            resonanceInfo = refPhrases.get(clean);
+          }
+          idx += 1;
+        }
+
+        const fragLength = tokenText.length;
+        const end = start + fragLength;
+        const tokenId = nextId++;
+
+        if (isResonant) resonantTokenCount++;
+
+        // Calculate UTF-8 bytes
+        const encoder = new TextEncoder();
+        const bytes = Array.from(encoder.encode(tokenText));
+        const hexBytes = bytes.map(b => '0x' + b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+
+        targetTokens.push({
+          index: targetTokens.length,
+          id: tokenId,
+          text: tokenText,
+          charStart: start,
+          charEnd: end,
+          charCount: fragLength,
+          bytes: bytes,
+          hexBytes: hexBytes,
+          isResonant: isResonant,
+          resonanceInfo: resonanceInfo
+        });
+
+        currentGlobalOffset = end;
+      }
+
+      // 3. Build Character-by-Character Mapping
+      const encoder = new TextEncoder();
+      const charMap = [];
+
+      for (let c = 0; c < targetText.length; c++) {
+        const char = targetText[c];
+        const bytes = Array.from(encoder.encode(char));
+        const hex = bytes.map(b => '0x' + b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+        const codePoint = 'U+' + char.codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
+
+        // Find enclosing token
+        const token = targetTokens.find(t => c >= t.charStart && c < t.charEnd) || targetTokens[targetTokens.length - 1];
+
+        // Check if character resonates with reference text
+        const refMatchIdx = refText.toLowerCase().indexOf(char.toLowerCase());
+        const resonates = token && token.isResonant;
+
+        charMap.push({
+          index: c,
+          char: char === ' ' ? '␣ (Space)' : (char === '\n' ? '↵ (Newline)' : char),
+          codePoint: codePoint,
+          hex: hex,
+          tokenId: token ? token.id : '-',
+          source: resonates ? `Ref char @ index ${token.resonanceInfo ? token.resonanceInfo.charStart : refMatchIdx}` : 'Novel / Unseen'
+        });
+      }
+
+      // 4. Update Metrics
+      const totalChars = targetText.length;
+      const totalTokens = targetTokens.length;
+      const totalBytes = encoder.encode(targetText).length;
+      const ratio = totalTokens > 0 ? (totalChars / totalTokens).toFixed(2) : '0.00';
+      const resonancePct = totalTokens > 0 ? Math.round((resonantTokenCount / totalTokens) * 100) : 0;
+
+      document.getElementById('metricChars').innerText = totalChars;
+      document.getElementById('metricTokens').innerText = totalTokens;
+      document.getElementById('metricRatio').innerText = ratio;
+      document.getElementById('metricBytes').innerText = totalBytes + ' B';
+      document.getElementById('resonanceMeter').value = resonancePct;
+      document.getElementById('metricResonance').innerText = resonancePct + '%';
+
+      // 5. Render Colored Chips
+      const chipsContainer = document.getElementById('tokenChipsContainer');
+      if (targetTokens.length === 0) {
+        chipsContainer.innerHTML = '<em>Enter text above to tokenize...</em>';
+      } else {
+        chipsContainer.innerHTML = '';
+        targetTokens.forEach((t, i) => {
+          const chip = document.createElement('span');
+          const bgColor = t.isResonant ? '#dcfce7' : CHIP_COLORS[i % CHIP_COLORS.length];
+          const borderColor = t.isResonant ? '#16a34a' : '#999';
+
+          chip.style.display = 'inline-block';
+          chip.style.margin = '3px 4px';
+          chip.style.padding = '3px 8px';
+          chip.style.border = `1px solid ${borderColor}`;
+          chip.style.borderRadius = '4px';
+          chip.style.backgroundColor = bgColor;
+          chip.style.fontFamily = 'monospace';
+          chip.style.fontSize = '14px';
+
+          const visibleText = t.text.replace(/ /g, '·').replace(/\n/g, '↵');
+          chip.innerHTML = `<strong>${escapeHtml(visibleText)}</strong> <small style="color:#555;">[ID:${t.id}]</small>`;
+          chip.title = `Token ID: ${t.id}\nChars: ${t.charCount} [${t.charStart}:${t.charEnd}]\nBytes: ${t.bytes.length}\n${t.isResonant ? 'Resonant (Found in Reference)' : 'Dissonant (Novel)'}`;
+
+          chipsContainer.appendChild(chip);
+        });
+      }
+
+      // 6. Render Token Details Table
+      const tokenTbody = document.getElementById('tokenTableBody');
+      tokenTbody.innerHTML = '';
+      targetTokens.forEach(t => {
+        const tr = document.createElement('tr');
+        if (t.isResonant) tr.style.backgroundColor = '#f0fdf4';
+
+        const dispText = t.text.replace(/ /g, '·').replace(/\n/g, '↵');
+        const resType = t.isResonant ? '<span style="color:green; font-weight:bold;">⚡ Resonant (In Ref)</span>' : '<span style="color:#999;">Dissonant (Novel)</span>';
+        const resProv = t.resonanceInfo 
+          ? `Matched in Ref @ chars [${t.resonanceInfo.charStart} : ${t.resonanceInfo.charEnd}]`
+          : 'None';
+
+        tr.innerHTML = `
+          <td>${t.index}</td>
+          <td><strong>${t.id}</strong></td>
+          <td><code>${escapeHtml(dispText)}</code></td>
+          <td>${t.charCount}</td>
+          <td>[${t.charStart} : ${t.charEnd}]</td>
+          <td>${t.bytes.length} B <small style="color:#666;">(${t.hexBytes})</small></td>
+          <td>${resType}</td>
+          <td>${escapeHtml(resProv)}</td>
+        `;
+        tokenTbody.appendChild(tr);
+      });
+
+      // 7. Render Character Grid Table
+      const charTbody = document.getElementById('charTableBody');
+      charTbody.innerHTML = '';
+      charMap.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>#${c.index}</td>
+          <td><strong>${escapeHtml(c.char)}</strong></td>
+          <td>${c.codePoint}</td>
+          <td>${c.hex}</td>
+          <td>${c.tokenId}</td>
+          <td>${escapeHtml(c.source)}</td>
+        `;
+        charTbody.appendChild(tr);
+      });
+
+      // 8. Output Raw IDs Array
+      const ids = targetTokens.map(t => t.id);
+      document.getElementById('rawIdsOutput').value = JSON.stringify(ids);
+    }
+
+    function escapeHtml(s) {
+      return (s || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Auto-run on load and on any input change
+    document.addEventListener('DOMContentLoaded', () => {
+      runTokenizer();
+      document.getElementById('refInput').addEventListener('input', runTokenizer);
+      document.getElementById('targetInput').addEventListener('input', runTokenizer);
+      document.getElementById('btnTokenize').addEventListener('click', runTokenizer);
+    });
+  </script>
+</body>
+</html>
